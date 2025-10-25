@@ -9,15 +9,29 @@ on:
 jobs:
   notify:
     runs-on: ubuntu-latest
+
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get commit diff
+        id: diff
+        run: |
+          git log -1 --name-status > diff.txt
+          git diff --unified=3 HEAD^ HEAD | head -n 40 >> diff.txt
+          echo "DIFF<<EOF" >> $GITHUB_ENV
+          cat diff.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Send Discord Notification
-        uses: ilshidur/action-discord@master
+        uses: Ilshidur/action-discord@master
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: |
-            🚀 **New push to GitHub!**
-            Repository: ${{ github.repository }}
-            Branch: ${{ github.ref_name }}
-            Author: ${{ github.actor }}
-            Commit message: ${{ github.event.head_commit.message }}
+            📦 **${{ github.repository }}**
+            ✨ Commit by **${{ github.actor }}** on branch **${{ github.ref_name }}**
+            📝 Message: *${{ github.event.head_commit.message }}*
+            ```diff
+            ${{ env.DIFF }}
+            ```
