@@ -1,40 +1,37 @@
-name: DiscordNotifyFS
+name: discordNotify
 
 on:
   push:
     branches:
       - main
+      - master
 
 jobs:
   notify:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo
-      
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # 2️⃣ Get only .fs file diffs from the latest commit
-      - name: Get F# file diffs
+      - name: Get commit diff
         id: diff
         run: |
-          # Get the diff of .fs files only, limit to 1800 chars to fit Discord
-          DIFF=$(git diff --unified=0 HEAD~1 HEAD -- '*.fs' | head -c 1800)
+          git log -1 --name-status > diff.txt
+          git diff --unified=3 HEAD^ HEAD | head -n 40 >> diff.txt
           echo "DIFF<<EOF" >> $GITHUB_ENV
-          echo "$DIFF" >> $GITHUB_ENV
+          cat diff.txt >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      # 3️⃣ Send Discord notification
-      - name: Send Discord notification
-        uses: ilshidur/action-discord@master
-        
+      - name: Send Discord Notification
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
-          content: |
-            🚀 **New F# commit pushed!**
-            **Repo:** ${{ github.repository }}
-            **Author:** ${{ github.actor }}
-            **Message:** ${{ github.event.head_commit.message }}
-
+          args: |
+            📦 **${{ github.repository }}**
+            ✨ Commit by **${{ github.actor }}** on branch **${{ github.ref_name }}**
+            📝 Message: *${{ github.event.head_commit.message }}*
             ```diff
             ${{ env.DIFF }}
             ```
