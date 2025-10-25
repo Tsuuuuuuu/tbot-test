@@ -49,5 +49,6 @@ let main args =
     printfn "subtractFunct(2, 1) = %d" newResult
 
     // Every F# program's main function must return an integer exit code.
-    // '0' usually means "everything worked fine."
+    // '0' usually means "everything worked fine.
+// test comment
     0
