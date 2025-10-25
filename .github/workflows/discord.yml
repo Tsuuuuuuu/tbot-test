@@ -1,37 +1,32 @@
 name: discordNotify
-
 on:
   push:
     branches:
       - main
-      - master
 
 jobs:
   notify:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Get commit diff
+      - name: Get latest commit diff
         id: diff
         run: |
-          git log -1 --name-status > diff.txt
-          git diff --unified=3 HEAD^ HEAD | head -n 40 >> diff.txt
           echo "DIFF<<EOF" >> $GITHUB_ENV
-          cat diff.txt >> $GITHUB_ENV
+          git diff -U0 HEAD~1 HEAD | head -c 1800 >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Send Discord Notification
-        uses: Ilshidur/action-discord@master
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Send Discord notification
+        uses: tsickert/discord-webhook@v5
         with:
-          args: |
-            📦 **${{ github.repository }}**
-            ✨ Commit by **${{ github.actor }}** on branch **${{ github.ref_name }}**
-            📝 Message: *${{ github.event.head_commit.message }}*
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          content: |
+            🚀 **New commit pushed!**
+            **Repo:** ${{ github.repository }}
+            **Author:** ${{ github.actor }}
+            **Message:** ${{ github.event.head_commit.message }}
+
             ```diff
             ${{ env.DIFF }}
             ```

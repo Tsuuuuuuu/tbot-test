@@ -6,7 +6,7 @@
 // This is a *module*, like a mini namespace for your code.
 // Think of it as a named box that holds related functions.
 module HelloFSharp
-
+// add a comment.
 // This is the "entry point" of your program.
 // The 'main' function is where the program starts running.
 // The 'args' are any command line arguments you pass in (not important for now).
