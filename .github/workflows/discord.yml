@@ -1,4 +1,5 @@
-name: discordNotify
+name: DiscordNotifyFS
+
 on:
   push:
     branches:
@@ -7,22 +8,28 @@ on:
 jobs:
   notify:
     runs-on: ubuntu-latest
+
     steps:
+      # 1️⃣ Checkout repo
       - uses: actions/checkout@v4
 
-      - name: Get latest commit diff
+      # 2️⃣ Get only .fs file diffs from the latest commit
+      - name: Get F# file diffs
         id: diff
         run: |
+          # Get the diff of .fs files only, limit to 1800 chars to fit Discord
+          DIFF=$(git diff --unified=0 HEAD~1 HEAD -- '*.fs' | head -c 1800)
           echo "DIFF<<EOF" >> $GITHUB_ENV
-          git diff -U0 HEAD~1 HEAD | head -c 1800 >> $GITHUB_ENV
+          echo "$DIFF" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
+      # 3️⃣ Send Discord notification
       - name: Send Discord notification
-        uses: tsickert/discord-webhook@v5
+        uses: tsickert/discord-webhook@v4
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
           content: |
-            🚀 **New commit pushed!**
+            🚀 **New F# commit pushed!**
             **Repo:** ${{ github.repository }}
             **Author:** ${{ github.actor }}
             **Message:** ${{ github.event.head_commit.message }}

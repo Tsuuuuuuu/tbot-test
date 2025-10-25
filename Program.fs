@@ -11,7 +11,7 @@ module HelloFSharp
 // The 'main' function is where the program starts running.
 // The 'args' are any command line arguments you pass in (not important for now).
 [<EntryPoint>]
-let main args =
+let main args ==
 
     // F# uses 'let' to define values or functions.
     // You don't need semicolons or types most of the time;
