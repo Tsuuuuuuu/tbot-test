@@ -11,7 +11,7 @@ jobs:
 
     steps:
       # 1️⃣ Checkout repo
-      - uses: actions/checkout@v4
+      
 
       # 2️⃣ Get only .fs file diffs from the latest commit
       - name: Get F# file diffs
@@ -25,7 +25,8 @@ jobs:
 
       # 3️⃣ Send Discord notification
       - name: Send Discord notification
-        uses: tsickert/discord-webhook@v4
+        uses: ilshidur/action-discord@master
+        
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
           content: |
