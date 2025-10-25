@@ -17,7 +17,6 @@ let main args =
     // You don't need semicolons or types most of the time;
     // F# figures them out automatically (this is called "type inference").
     let greeting = "Hello, F# world!"
-
     // You print to the console using 'printfn'
     // (the 'n' means it adds a new line automatically)
     printfn "%s" greeting
